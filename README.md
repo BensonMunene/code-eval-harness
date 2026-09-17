@@ -114,7 +114,7 @@ flowchart TD
 A candidate that does not terminate has no meaningful performance score. Correctness gates
 everything downstream of it. This is why a score is not a sum.
 
-> Today `runner/step0.py` implements the verifier stage only. Isolation, capture and grading
+> Today `harness/runner.py` implements the verifier stage only. Isolation, capture and grading
 > are phases 3 and 4.
 
 ### The boundary is a safety requirement, not only an architectural one
@@ -130,7 +130,7 @@ class LRUCache:
         raise SystemExit("grader terminated")
 ```
 
-terminates `runner/step0.py` partway through printing its report. The runner catches
+terminates `harness/runner.py` partway through printing its report. The runner catches
 `Exception`, which does not include `SystemExit`. Widening it to `BaseException` narrows the
 hole without closing it: `os._exit()` bypasses exception handling entirely, and nothing
 in-process stops an infinite loop or a memory bomb.
@@ -202,18 +202,27 @@ measures the candidate. Clause coverage measures us.
 
 ## Repository layout
 
+The repository holds several evaluation tasks. Code that works for any task lives in
+`harness/`; everything specific to one task lives in its own folder under `tasks/`.
+
 ```
-docs/
-  01-task-spec-lru-cache.md   public specification — the exact text a candidate sees
-  02-test-plan-lru-cache.md   private test plan — catalogue of wrong implementations
-reference/
-  naive.py                    the oracle: O(n), slow, auditable by eye
-candidates/
-  correct.py                  a genuinely correct O(1) implementation
-  fifo.py                     evicts by insertion order — the common wrong answer
-runner/
-  step0.py                    discrimination demonstration
+harness/
+  runner.py                   loads candidates, runs a suite, prints the result table
+tasks/
+  lru-cache/
+    spec.md                   public specification — the exact text a candidate sees
+    test-plan.md              private test plan — catalogue of wrong implementations
+    reference/
+      naive.py                the oracle: O(n), slow, auditable by eye
+    candidates/
+      correct.py              a genuinely correct O(1) implementation
+      fifo.py                 evicts by insertion order — the common wrong answer
+    demo.py                   discrimination demonstration
 ```
+
+Every task has the same four parts: the specification, the private test plan, a reference
+solution, and candidates, both correct and deliberately wrong, used to check that the tests
+can tell them apart. Adding a task means adding a folder with that shape.
 
 The separation between the public specification and the private test plan is structural, not
 organisational. A candidate that can read the test plan can satisfy it without implementing
@@ -226,7 +235,7 @@ Requires Python 3.12+. No dependencies.
 ```bash
 git clone git@github.com:ALIBCJH/model-evaluator.git
 cd model-evaluator
-python3 runner/step0.py
+python3 tasks/lru-cache/demo.py
 ```
 
 ## Roadmap

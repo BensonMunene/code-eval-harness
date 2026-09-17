@@ -107,5 +107,5 @@ hardware. Prefer the ratio; keep an absolute limit only as a crash guard.
 ## Coverage target
 
 Coverage is measured against **spec clauses**, not code lines. Every normative
-statement in `01-task-spec-lru-cache.md` must be exercised by at least one test.
+statement in `spec.md` must be exercised by at least one test.
 Line coverage measures the candidate; clause coverage measures us.

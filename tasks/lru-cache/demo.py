@@ -1,17 +1,12 @@
 """Step 0: no sandbox, no scoring. One question only —
 does our test suite tell a correct implementation from a wrong one?"""
-import importlib.util
+import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parents[1]))  # repo root, so `harness` is importable
 
-
-def load(relpath, clsname="LRUCache"):
-    path = ROOT / relpath
-    spec = importlib.util.spec_from_file_location(path.stem, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return getattr(mod, clsname)
+from harness.runner import run
 
 
 # --- the tests a developer writes by instinct -------------------------------
@@ -73,30 +68,12 @@ def t_R1(C):
 
 
 OBVIOUS = [t_N1, t_N2, t_N3, t_B1]
-CANDIDATES = {"correct": "candidates/correct.py", "fifo": "candidates/fifo.py"}
+CANDIDATES = {
+    "correct": HERE / "candidates" / "correct.py",
+    "fifo": HERE / "candidates" / "fifo.py",
+}
 
-
-def run(suite, title):
-    classes = {name: load(p) for name, p in CANDIDATES.items()}
-    print(f"\n{title}")
-    print("-" * 58)
-    print(f"{'test':<34}" + "".join(f"{n:>12}" for n in classes))
-    results = {n: 0 for n in classes}
-    for t in suite:
-        label = f"{t.__name__[2:]}  {t.__doc__}"
-        row = f"{label[:34]:<34}"
-        for name, C in classes.items():
-            try:
-                t(C)
-                row += f"{'PASS':>12}"
-                results[name] += 1
-            except Exception:
-                row += f"{'FAIL':>12}"
-        print(row)
-    print("-" * 58)
-    print(f"{'score':<34}" + "".join(f"{str(results[n]) + '/' + str(len(suite)):>12}" for n in classes))
-    return results
-
-
-run(OBVIOUS, "SUITE A — the tests you'd write without thinking about it")
-run(OBVIOUS + [t_R1], "SUITE B — same, plus one test derived from a named bug")
+run(OBVIOUS, "SUITE A — the tests you'd write without thinking about it",
+    CANDIDATES, "LRUCache")
+run(OBVIOUS + [t_R1], "SUITE B — same, plus one test derived from a named bug",
+    CANDIDATES, "LRUCache")
