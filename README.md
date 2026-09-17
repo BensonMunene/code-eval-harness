@@ -240,6 +240,10 @@ python3 tasks/lru-cache/demo.py
 
 ## Roadmap
 
+**The current project plan is in [ROADMAP.md](ROADMAP.md):** making a small coding model better at
+backend tasks with SFT, DPO and RL, scored by the evaluator described here. The phases below are
+the evaluator itself, which that plan depends on.
+
 ```mermaid
 flowchart LR
     P1["1<br/>Define the<br/>problem"] --> P2["2<br/>Design the<br/>test suite"] --> P3["3<br/>Execution<br/>sandbox"] --> P4["4<br/>Grader"] --> P5["5<br/>Attack the<br/>evaluator"] --> P6["6<br/>Meta-<br/>evaluation"]
