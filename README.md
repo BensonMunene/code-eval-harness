@@ -117,6 +117,27 @@ everything downstream of it. This is why a score is not a sum.
 > Today `runner/step0.py` implements the verifier stage only. Isolation, capture and grading
 > are phases 3 and 4.
 
+### The boundary is a safety requirement, not only an architectural one
+
+Phase 1 argued for holding the candidate behind a process boundary because it is the only
+interface that extends to an agent, whose output is a trajectory rather than a return value.
+Attacking the current runner showed that it is also the only thing that makes evaluation
+safe. A candidate that does this:
+
+```python
+class LRUCache:
+    def get(self, key):
+        raise SystemExit("grader terminated")
+```
+
+terminates `runner/step0.py` partway through printing its report. The runner catches
+`Exception`, which does not include `SystemExit`. Widening it to `BaseException` narrows the
+hole without closing it: `os._exit()` bypasses exception handling entirely, and nothing
+in-process stops an infinite loop or a memory bomb.
+
+A score is only trustworthy if the thing producing it cannot be stopped by the thing being
+measured.
+
 ## What gets measured, and what dies where
 
 Each layer of testing kills a different class of wrong implementation. The layering matters
