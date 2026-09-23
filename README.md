@@ -233,8 +233,8 @@ the specification.
 Requires Python 3.12+. No dependencies.
 
 ```bash
-git clone git@github.com:ALIBCJH/model-evaluator.git
-cd model-evaluator
+git clone https://github.com/BensonMunene/code-eval-harness.git
+cd code-eval-harness
 python3 tasks/lru-cache/demo.py
 ```
 
